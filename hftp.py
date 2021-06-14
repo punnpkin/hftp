@@ -1,4 +1,5 @@
 import socket
+import os
 
 from multiprocessing import Process
 
@@ -7,8 +8,8 @@ def handle_client(client_socket):
     request_data = client_socket.recv(1024)
 
     response_start_line = "HTTP/1.1 200 ok\r\n"
-    response_headers = "Server: My server\r\n"
-    response_body = "<h1>Test</h1>"
+    response_headers = "Server: HFTP\r\n"
+    response_body = "\n".join(os.listdir("."))
     response = response_start_line + response_headers + "\r\n" + response_body
 
     client_socket.send(bytes(response, "utf-8"))
