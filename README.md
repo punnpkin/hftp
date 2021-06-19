@@ -4,7 +4,7 @@ A program that maps a specified folder on a computer to a http service based on 
 
 **Usage**(Python and django need to be installed on your computer)
 
-In cmd or shell
+In cmd:
 ``` 
 git clone https://github.com/punnpkin/hftp.git
 cd hftp
