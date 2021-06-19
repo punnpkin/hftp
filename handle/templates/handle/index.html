@@ -23,22 +23,54 @@
             }
         }
 
+        console.log(curr)
+
         $.ajax({
             'url': '/update',
             'type': 'get',
             'data': { "path": curr },
             'datatype': "json",
             'success': function (data) {
-                var item_list = data['item_list'].toString();
-                var items = item_list.split(",");
+                var dir_list = data['dir_list'].toString();
+                var file_list = data['file_list'].toString();
+                var dir = dir_list.split(",");
+                var file = file_list.split(",");
+
                 var html = "";
-                items.forEach(item => {
-                    html = html + "<button type=\"button\" class=\"list-group-item list-group-item-action\" onclick=\"update(this)\">" + item + "</button>"
-                });
+                if (dir != ""){
+                    dir.forEach(item => {
+                        html = html + "<button type=\"button\" class=\"list-group-item list-group-item-action\" onclick=\"update(this)\">" + item + "</button>"
+                    });
+                }
+
+                if (file != ""){file.forEach(item => {
+                        html = html + "<button type=\"button\" class=\"list-group-item list-group-item-action\" onclick=\"dowload(this)\">" + item + "</button>"
+                    });
+                }
+
                 $(div).html(html);
                 $(path).text(curr);
             }
-        })
+        });
+    }
+
+    function dowload(button){
+        var curr = $(path).text();
+        var item = $(button).text();
+        var full = document.URL+"update?path=" + curr+"/"+item; 
+        var req = new XMLHttpRequest();
+        req.open("GET", full, true);
+        req.responseType = "blob";
+        req.send();
+        req.onload = function (event) {
+            if (this.status == "200") {
+                var blob = req.response;
+                var link = document.createElement("a");
+                link.href=window.URL.createObjectURL(blob);
+                link.download=item;
+                link.click();
+            }
+        }
     }
 </script>
 {% endif%}

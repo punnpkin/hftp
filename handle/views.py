@@ -25,9 +25,9 @@ def handle_dir(path):
         else:
             file_list.append(item)
 
-    res_list = [".."]+dir_list+file_list
+    dir_list = [".."]+dir_list
 
-    return res_list
+    return dir_list, file_list
 
 
 def index(request):
@@ -40,15 +40,24 @@ def update(request):
     if(request.method == 'GET'):
         path = request.GET.get("path")
     
-    if (path==""):
+    if path=="":
         item_list = get_disklist()
-        context = {'item_list': item_list}
+        context = {'dir_list': item_list, 'file_list':""}
         return response.JsonResponse(context, safe=False)
 
-    if os.path.isdir(path):
-        item_list = handle_dir(path)
-        context = {'item_list': item_list}
+    elif os.path.isdir(path):
+        dir_list, file_list = handle_dir(path)
+        context = {'dir_list': dir_list,'file_list':file_list}
         return response.JsonResponse(context, safe=False)
+
+    elif path.split(".")[-1] == "html":
+        try:
+            res = response.FileResponse(open(path, 'rb'))
+            res['content_type'] = "application/octet-stream"
+            res['Content-Disposition'] = 'attachment; filename=' + os.path.basename(path)
+            return res
+        except Exception:
+            raise response.HTTP404
 
     else:
         return response.HttpResponse("TODO...")
